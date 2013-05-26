@@ -1,0 +1,19 @@
+{
+  "name": "scgi-stream",
+  "version": "0.0.0",
+  "description": "",
+  "main": "scgi.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/deoxxa/scgi-stream.git"
+  },
+  "keywords": [
+    "scgi",
+    "stream",
+    "simple",
+    "request"
+  ],
+  "author": "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz/)",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
