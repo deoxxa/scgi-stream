@@ -1,7 +1,7 @@
 {
   "name": "scgi-stream",
   "version": "0.0.1",
-  "description": "",
+  "description": "Simple SCGI client",
   "main": "scgi.js",
   "repository": {
     "type": "git",
