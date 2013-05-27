@@ -25,10 +25,13 @@ API
 
 **request**
 
-Makes an SCGI request. Returns an `SCGIResponse` object.
+Makes an SCGI request. Returns an `SCGIRequest` object. Also does some wiring
+for you so that the request returned will emit a `response` event when the
+response begins to arrive. See the example section below for more information on
+how this works.
 
 ```javascript
-scgi.request(options, [data]);
+scgi.request(options);
 ```
 
 ```javascript
@@ -43,15 +46,13 @@ Arguments
   Available options are `host`, `port`, `path`, `method`, and `headers`. `host`,
   `port`, `path`, and `method` are strings, while `headers` is an object with a
   predictable structure.
-* _data_ - the payload of the request. Optional. If not supplied, will be
-  replaced with an empty body.
 
 **SCGIRequest**
 
-A readable stream representing a request.
+A duplex stream representing a request.
 
 ```javascript
-new SCGIRequest(options, [data]);
+new SCGIRequest(options);
 ```
 
 ```javascript
@@ -60,16 +61,17 @@ var req = new scgi.SCGIRequest({
   headers: {
     "content-type": "text/plain",
   },
-}, "hi there");
+});
 
 req.pipe(process.stdout);
+
+req.end("hi there");
 ```
 
 Arguments
 
 * _options_ - an object specifying options for the request. Available options
   are `path`, `method`, and `headers`.
-* _data_ - payload for the request. Optional.
 
 **SCGIResponse**
 
@@ -104,19 +106,21 @@ Also see [example.js](https://github.com/deoxxa/scgi-stream/blob/master/example.
 ```javascript
 var scgi = require("scgi-stream");
 
-var options = {
+var req = scgi.request({
   host: "127.0.0.1",
   port: 17199,
   path: "/",
-};
-
-var res = scgi.request(options, "<methodCall><methodName>system.listMethods</methodName></methodCall>");
-
-res.on("headers", function(headers) {
-  console.log(headers);
 });
 
-res.pipe(process.stdout);
+req.on("response", function(res) {
+  res.on("headers", function(headers) {
+    console.log(headers);
+  });
+
+  res.pipe(process.stdout);
+});
+
+req.end("<methodCall><methodName>download_list</methodName></methodCall>");
 ```
 
 License

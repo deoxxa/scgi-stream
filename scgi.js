@@ -12,9 +12,14 @@ var request = function request(options, data) {
   var req = new SCGIRequest(options, data),
       res = new SCGIResponse(options);
 
-  req.pipe(socket).pipe(res);
+  req.pipe(socket);
 
-  return res;
+  req.on("end", function() {
+    req.emit("response", res);
+    socket.pipe(res);
+  });
+
+  return req;
 };
 
 module.exports.request = request;
