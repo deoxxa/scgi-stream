@@ -15,5 +15,7 @@
   ],
   "author": "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz/)",
   "license": "BSD",
-  "readmeFilename": "README.md"
+  "dependencies": {
+    "bun": "0.0.5"
+  }
 }

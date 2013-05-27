@@ -1,4 +1,5 @@
-var net = require("net");
+var net = require("net"),
+    bun = require("bun");
 
 var SCGIRequest = require("./lib/request"),
     SCGIResponse = require("./lib/response");
@@ -6,10 +7,9 @@ var SCGIRequest = require("./lib/request"),
 module.exports.SCGIRequest = SCGIRequest;
 module.exports.SCGIResponse = SCGIResponse;
 
-var request = function request(options, data) {
-  var socket = net.connect(options.port, options.host);
-
-  var req = new SCGIRequest(options, data),
+var request = function request(options) {
+  var socket = net.connect(options.port, options.host),
+      req = new SCGIRequest(options),
       res = new SCGIResponse(options);
 
   req.pipe(socket);
@@ -22,4 +22,19 @@ var request = function request(options, data) {
   return req;
 };
 
+var duplex = function duplex(options) {
+  var socket = net.connect(options.port, options.host),
+      req = new SCGIRequest(options),
+      res = new SCGIResponse(options);
+
+  var s = bun([req, socket, res]);
+
+  res.on("headers", function(headers) {
+    s.emit("headers", headers);
+  });
+
+  return s;
+};
+
 module.exports.request = request;
+module.exports.duplex = duplex;

@@ -47,6 +47,29 @@ Arguments
   `port`, `path`, and `method` are strings, while `headers` is an object with a
   predictable structure.
 
+**duplex**
+
+Makes an SCGI request. Returns a duplex stream that combines both the request
+and response parts of the operation. The stream returned will emit the `headers`
+event like a regular `SCGIRespons` object, but will not emit a `response` event.
+
+```javascript
+scgi.duplex(options);
+```
+
+```javascript
+var scgi = require("scgi-stream");
+
+process.stdin.pipe(scgi.duplex(options)).pipe(process.stdout);
+```
+
+Arguments
+
+* _options_ - an object specifying options for the request and response.
+  Available options are `host`, `port`, `path`, `method`, and `headers`. `host`,
+  `port`, `path`, and `method` are strings, while `headers` is an object with a
+  predictable structure.
+
 **SCGIRequest**
 
 A duplex stream representing a request.
