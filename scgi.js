@@ -1,5 +1,6 @@
 var net = require("net"),
-    bun = require("bun");
+    bun = require("bun"),
+    url = require("url");
 
 var SCGIRequest = require("./lib/request"),
     SCGIResponse = require("./lib/response");
@@ -7,8 +8,55 @@ var SCGIRequest = require("./lib/request"),
 module.exports.SCGIRequest = SCGIRequest;
 module.exports.SCGIResponse = SCGIResponse;
 
+function socket_options(options) {
+  var socket_options = {};
+  
+  if ("fd" in options)
+    socket_options.fd = options.fd;
+
+  if ("type" in options)
+    socket_options.type = options.type;
+
+  if ("allowHalfOpen" in options)
+    socket_options.allowHalfOpen = options.allowHalfOpen;
+
+  if ("port" in options)
+    socket_options.port = options.port;
+
+  if ("host" in options)
+    socket_options.host = options.host;
+
+  if ("socket" in options)
+    socket_options.path = options.socket;
+
+  if (options.url) {
+    var parsed = url.parse(options.url);
+    
+    if (parsed.protocol)
+      socket_options.type = parsed.protocol.substr(0, parsed.protocol.length - 1);
+
+    if (parsed.hostname)
+      socket_options.host = parsed.hostname;
+
+    if (parsed.protocol == 'unix')
+      socket_options.path = parsed.path;
+    else
+      options.path = parsed.path;
+
+    if (parsed.port)
+      socket_options.port = parsed.port;
+
+    if (parsed.auth) {
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Basic ' + new Buffer(parsed.auth).toString('base64');
+    }
+  }
+
+  return socket_options;
+}
+
 var request = function request(options) {
-  var socket = net.connect(options.port, options.host),
+  var socket = new net.createConnection(socket_options(options)),
       req = new SCGIRequest(options),
       res = new SCGIResponse(options);
 
@@ -23,7 +71,7 @@ var request = function request(options) {
 };
 
 var duplex = function duplex(options) {
-  var socket = net.connect(options.port, options.host),
+  var socket = net.createConnection(socket_options(options)),
       req = new SCGIRequest(options),
       res = new SCGIResponse(options);
 
