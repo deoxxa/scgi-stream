@@ -38,7 +38,7 @@ function socket_options(options) {
     if (parsed.hostname)
       socket_options.host = parsed.hostname;
 
-    if (parsed.protocol == 'unix')
+    if (parsed.protocol && parsed.protocol.toLowerCase() == 'unix:')
       socket_options.path = parsed.path;
     else
       options.path = parsed.path;
