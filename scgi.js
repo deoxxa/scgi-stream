@@ -62,6 +62,10 @@ var request = function request(options) {
 
   req.pipe(socket);
 
+  socket.on("error", function(e) {
+    req.emit("error", e);
+  });
+
   req.on("end", function() {
     req.emit("response", res);
     socket.pipe(res);
@@ -76,6 +80,10 @@ var duplex = function duplex(options) {
       res = new SCGIResponse(options);
 
   var s = bun([req, socket, res]);
+
+  socket.on("error", function(e) {
+    s.emit("error", e);
+  });
 
   res.on("headers", function(headers) {
     s.emit("headers", headers);
