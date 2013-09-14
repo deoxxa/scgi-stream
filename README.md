@@ -43,15 +43,17 @@ scgi.request(options);
 Arguments
 
 * _options_ - an object specifying options for the request and response.
-  Available options are `host`, `port`, `path`, `method`, and `headers`. `host`,
-  `port`, `path`, and `method` are strings, while `headers` is an object with a
-  predictable structure.
+  Available options are `stream`, `host`, `port`, `path`, `method`, and
+  `headers`. `stream` is optionally a stream object. If `stream` is not
+  specified, `host` and `port`, which are a string and a number respectively,
+  will be used to construct a TCP socket. `path` and `method` are strings, and
+  `headers` is an object with a predictable structure.
 
 **duplex**
 
 Makes an SCGI request. Returns a duplex stream that combines both the request
 and response parts of the operation. The stream returned will emit the `headers`
-event like a regular `SCGIRespons` object, but will not emit a `response` event.
+event like a regular `SCGIResponse` object, but will not emit a `response` event.
 
 ```javascript
 scgi.duplex(options);
@@ -65,10 +67,7 @@ process.stdin.pipe(scgi.duplex(options)).pipe(process.stdout);
 
 Arguments
 
-* _options_ - an object specifying options for the request and response.
-  Available options are `host`, `port`, `path`, `method`, and `headers`. `host`,
-  `port`, `path`, and `method` are strings, while `headers` is an object with a
-  predictable structure.
+* _options_ - same as the options for **request**
 
 **SCGIRequest**
 

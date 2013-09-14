@@ -8,26 +8,26 @@ module.exports.SCGIRequest = SCGIRequest;
 module.exports.SCGIResponse = SCGIResponse;
 
 var request = function request(options) {
-  var socket = net.connect(options.port, options.host),
+  var stream = options.stream || net.connect(options.port, options.host),
       req = new SCGIRequest(options),
       res = new SCGIResponse(options);
 
-  req.pipe(socket);
+  req.pipe(stream);
 
   req.on("end", function() {
     req.emit("response", res);
-    socket.pipe(res);
+    stream.pipe(res);
   });
 
   return req;
 };
 
 var duplex = function duplex(options) {
-  var socket = net.connect(options.port, options.host),
+  var stream = options.stream || net.connect(options.port, options.host),
       req = new SCGIRequest(options),
       res = new SCGIResponse(options);
 
-  var s = bun([req, socket, res]);
+  var s = bun([req, stream, res]);
 
   res.on("headers", function(headers) {
     s.emit("headers", headers);
